@@ -12,274 +12,116 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
       min-height: 100vh;
       color: #fff;
     }
-
     .header {
-      background: rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.07);
+      -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
-      padding: 20px;
+      padding: 16px 20px;
       text-align: center;
       border-bottom: 1px solid rgba(255,255,255,0.1);
       position: sticky;
       top: 0;
       z-index: 100;
     }
-
-    .header h1 {
-      font-size: 1.4rem;
-      color: #f4d03f;
-      text-shadow: 0 0 20px rgba(244,208,63,0.5);
-    }
-
-    .header p {
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.6);
-      margin-top: 4px;
-    }
-
     .back-btn {
       display: none;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: rgba(255,255,255,0.1);
       border: none;
       color: #f4d03f;
-      padding: 8px 16px;
+      padding: 7px 14px;
       border-radius: 20px;
       cursor: pointer;
-      font-size: 0.9rem;
-      margin-bottom: 10px;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
       transition: all 0.2s;
     }
+    .header h1 { font-size: 1.3rem; color: #f4d03f; text-shadow: 0 0 20px rgba(244,208,63,0.4); }
+    .header p  { font-size: 0.78rem; color: rgba(255,255,255,0.55); margin-top: 3px; }
 
-    .back-btn:hover { background: rgba(255,255,255,0.2); }
-
-    /* ===== JADIDLAR RO'YXATI ===== */
-    #jadidlar-page { padding: 20px; }
-
+    /* RO'YXAT */
+    #jadidlar-page { padding: 16px; }
     .search-box {
-      width: 100%;
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(255,255,255,0.08);
-      color: #fff;
-      font-size: 1rem;
-      margin-bottom: 20px;
-      outline: none;
+      width: 100%; padding: 11px 16px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.07); color: #fff;
+      font-size: 0.95rem; margin-bottom: 16px; outline: none;
     }
-
-    .search-box::placeholder { color: rgba(255,255,255,0.4); }
-
+    .search-box::placeholder { color: rgba(255,255,255,0.35); }
     .jadid-card {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
-      padding: 16px 20px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+      cursor: pointer; transition: all 0.25s;
+      display: flex; align-items: center; gap: 14px;
     }
-
-    .jadid-card:hover, .jadid-card:active {
-      background: rgba(244,208,63,0.15);
-      border-color: #f4d03f;
-      transform: translateX(4px);
-    }
-
+    .jadid-card:active { background: rgba(244,208,63,0.12); border-color: #f4d03f; }
     .jadid-avatar {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
+      width: 48px; height: 48px; border-radius: 50%;
       background: linear-gradient(135deg, #f4d03f, #e67e22);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: #1a1a2e;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: bold; color: #1a1a2e; flex-shrink: 0;
     }
+    .jadid-info h3 { font-size: 0.95rem; color: #fff; margin-bottom: 3px; }
+    .jadid-info p  { font-size: 0.75rem; color: rgba(255,255,255,0.45); }
+    .arrow { margin-left: auto; color: rgba(255,255,255,0.3); font-size: 1.1rem; }
 
-    .jadid-info h3 {
-      font-size: 1rem;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-
-    .jadid-info p {
-      font-size: 0.78rem;
-      color: rgba(255,255,255,0.5);
-    }
-
-    .arrow {
-      margin-left: auto;
-      color: rgba(255,255,255,0.3);
-      font-size: 1.2rem;
-    }
-
-    /* ===== JADID TANLANGANDAN KEYIN ===== */
-    #jadid-menu-page { padding: 20px; display: none; }
-
+    /* MENYU */
+    #jadid-menu-page { padding: 16px; }
     .jadid-hero {
-      background: linear-gradient(135deg, rgba(244,208,63,0.15), rgba(230,126,34,0.15));
-      border: 1px solid rgba(244,208,63,0.3);
-      border-radius: 20px;
-      padding: 24px;
-      text-align: center;
-      margin-bottom: 24px;
+      background: linear-gradient(135deg, rgba(244,208,63,0.1), rgba(230,126,34,0.1));
+      border: 1px solid rgba(244,208,63,0.25);
+      border-radius: 18px; padding: 20px; text-align: center; margin-bottom: 20px;
     }
-
     .jadid-hero-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
+      width: 70px; height: 70px; border-radius: 50%;
       background: linear-gradient(135deg, #f4d03f, #e67e22);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      font-weight: bold;
-      color: #1a1a2e;
-      margin: 0 auto 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; font-weight: bold; color: #1a1a2e; margin: 0 auto 12px;
     }
-
-    .jadid-hero h2 {
-      font-size: 1.3rem;
-      color: #f4d03f;
-      margin-bottom: 6px;
-    }
-
-    .jadid-hero p {
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.6);
-    }
-
+    .jadid-hero h2 { font-size: 1.15rem; color: #f4d03f; margin-bottom: 4px; }
+    .jadid-hero p  { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
     .menu-btn {
-      width: 100%;
-      padding: 18px;
-      border-radius: 16px;
-      border: none;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      width: 100%; padding: 16px; border-radius: 14px; border: none;
+      font-size: 0.95rem; font-weight: 600; cursor: pointer;
+      transition: all 0.25s; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 10px; color: #fff;
     }
+    .menu-btn .icon { font-size: 1.3rem; }
+    .menu-btn:active { transform: scale(0.98); }
+    .menu-btn.bio   { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+    .menu-btn.hayot { background: linear-gradient(135deg, #3498db, #2980b9); }
+    .menu-btn.asar  { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
 
-    .menu-btn.bio {
-      background: linear-gradient(135deg, #2ecc71, #27ae60);
-      color: #fff;
-    }
-
-    .menu-btn.life {
-      background: linear-gradient(135deg, #3498db, #2980b9);
-      color: #fff;
-    }
-
-    .menu-btn:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
-
-    .menu-btn .icon { font-size: 1.4rem; }
-
-    /* ===== KONTENT SAHIFASI ===== */
-    #content-page { padding: 20px; display: none; }
-
+    /* KONTENT */
+    #content-page { padding: 16px; }
     .content-title {
-      font-size: 1.1rem;
-      color: #f4d03f;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      font-size: 1rem; color: #f4d03f; margin-bottom: 14px;
+      padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);
     }
-
     .content-text {
-      background: rgba(255,255,255,0.05);
-      border-radius: 16px;
-      padding: 20px;
-      font-size: 0.95rem;
-      line-height: 1.8;
-      color: rgba(255,255,255,0.9);
-      margin-bottom: 20px;
-      white-space: pre-wrap;
+      background: rgba(255,255,255,0.05); border-radius: 14px;
+      padding: 16px; font-size: 0.92rem; line-height: 1.85;
+      color: rgba(255,255,255,0.88); margin-bottom: 16px; white-space: pre-wrap;
     }
-
-    /* ===== TTS TUGMASI ===== */
-    .tts-section {
-      background: rgba(255,255,255,0.05);
-      border-radius: 16px;
-      padding: 16px;
-      margin-top: 10px;
+    .audio-section {
+      background: rgba(255,255,255,0.05); border-radius: 14px; padding: 14px;
     }
-
-    .tts-label {
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.5);
-      margin-bottom: 10px;
-      text-align: center;
+    .audio-label {
+      font-size: 0.78rem; color: rgba(255,255,255,0.45);
+      text-align: center; margin-bottom: 10px;
     }
-
-    .tts-btn {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
-      background: linear-gradient(135deg, #e74c3c, #c0392b);
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .tts-btn:hover { transform: scale(1.02); }
-
-    .tts-btn.playing {
-      background: linear-gradient(135deg, #f39c12, #e67e22);
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(243,156,18,0.4); }
-      50% { box-shadow: 0 0 0 10px rgba(243,156,18,0); }
-    }
-
-    .tts-progress {
-      margin-top: 10px;
-      height: 4px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 2px;
-      overflow: hidden;
-      display: none;
-    }
-
-    .tts-progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #f4d03f, #e67e22);
-      width: 0%;
-      transition: width 0.3s;
-      animation: loading 2s infinite;
-    }
-
-    @keyframes loading {
-      0% { width: 0%; }
-      50% { width: 70%; }
-      100% { width: 100%; }
+    .audio-player { width: 100%; border-radius: 10px; outline: none; }
+    .no-audio-msg {
+      text-align: center; color: rgba(255,255,255,0.35);
+      font-size: 0.82rem; padding: 8px; display: none;
     }
 
     .page { display: none !important; }
@@ -294,204 +136,212 @@
   <p id="header-sub">Jadidni tanlang</p>
 </div>
 
-<!-- ===== SAHIFA 1: JADIDLAR RO'YXATI ===== -->
 <div id="jadidlar-page" class="page active">
   <br>
   <input class="search-box" type="text" placeholder="🔍 Jadidni qidiring..." oninput="filterJadidlar(this.value)" />
   <div id="jadidlar-list"></div>
 </div>
 
-<!-- ===== SAHIFA 2: JADID MENYU ===== -->
 <div id="jadid-menu-page" class="page">
   <div class="jadid-hero">
     <div class="jadid-hero-avatar" id="hero-avatar"></div>
     <h2 id="hero-name"></h2>
     <p id="hero-years"></p>
   </div>
-  <button class="menu-btn bio" onclick="showContent('bio')">
-    <span class="icon">📖</span>
-    Avtobiografiya
+  <button class="menu-btn bio"   onclick="showContent('bio')">
+    <span class="icon">📖</span> Avtobiografiya
   </button>
-  <button class="menu-btn life" onclick="showContent('hayot')">
-    <span class="icon">🌟</span>
-    Hayoti va ijodi
+  <button class="menu-btn hayot" onclick="showContent('hayot')">
+    <span class="icon">🌟</span> Hayoti va ijodi
+  </button>
+  <button class="menu-btn asar"  onclick="showContent('asar')">
+    <span class="icon">📝</span> Asarlari
   </button>
 </div>
 
-<!-- ===== SAHIFA 3: KONTENT ===== -->
 <div id="content-page" class="page">
   <div class="content-title" id="content-title"></div>
-  <div class="content-text" id="content-text"></div>
-
-  <div class="tts-section">
-    <div class="tts-label">🔊 Matnni eshitish</div>
-    <button class="tts-btn" id="tts-btn" onclick="toggleTTS()">
-      <span id="tts-icon">🎧</span>
-      <span id="tts-label">Eshitish</span>
-    </button>
-    <div class="tts-progress" id="tts-progress">
-      <div class="tts-progress-bar"></div>
-    </div>
+  <div class="content-text"  id="content-text"></div>
+  <div class="audio-section">
+    <div class="audio-label">🔊 Matnni eshitish</div>
+    <audio id="audio-player" class="audio-player" controls style="display:none;"></audio>
+    <div class="no-audio-msg" id="no-audio-msg">🎵 Bu bo'lim uchun audio mavjud emas</div>
   </div>
 </div>
 
 <script>
-// ============================================================
-// JADIDLAR MA'LUMOTLARI — O'ZINGIz TO'LDIRING
-// ============================================================
+// ================================================================
+// ⚠️ FAQAT SHU QATORNI O'ZGARTIRING — O'z GitHub Pages linki
+// ================================================================
+const BASE_URL = "https://gamer27410.github.io/JADID3";
+
+// ================================================================
+// JADIDLAR — matn va audio sozlamalari
+// ================================================================
 const jadidlar = [
+
+  // 1. BEHBUDIY
   {
-    id: "behbudi",
-    name: "Mahmudxo'ja Behbudiy",
-    years: "1875 – 1919",
-    initials: "B",
+    id: "behbudi", name: "Mahmudxo'ja Behbudiy", years: "1875 – 1919", initials: "B",
     bio: `Mahmudxo'ja Behbudiy 1875-yilda Samarqand viloyatining Kattaqo'rg'on tumanida tug'ilgan. U diniy va dunyoviy ta'lim olgan. Otasi mahalliy qozi bo'lgan. Behbudiy yoshligidan arab, fors va rus tillarini o'rgangan. U bir necha marta Makkaga haj safarini amalga oshirgan. 1903-yilda Misr, Suriya va Turkiyaga sayohat qilib, u yerda jadidchilik g'oyalari bilan yaqindan tanishgan. Behbudiy Samarqandga qaytib, yangi usul maktablarini ochishga kirishgan. 1913-yilda "Oyina" jurnalini tashkil etgan. U o'zbek milliy teatrining asoschisi hisoblanadi. 1919-yilda Buxoro amiri tomonidan qatl etilgan.`,
-    hayot: `Mahmudxo'ja Behbudiy O'rta Osiyo jadidchilik harakatining yetakchi namoyandalaridan biri bo'lib, uning faoliyati ta'lim, matbuot va adabiyot sohalarini qamrab olgan. U 1903-yilda "Taraqqiy" gazetasiga maqolalar yozishni boshlagan va o'z g'oyalarini keng ommaga tarqatgan. Behbudiy 1911-yilda "Padarkush" nomli dramani yozgan — bu o'zbek milliy dramaturgiyasining ilk namunalaridan biri hisoblanadi. Asar yoshlarni ta'lim olishga da'vat etgan. U "Oyina" jurnalida xalqni savodxonlikka, ilm-fanga da'vat etuvchi ko'plab maqolalar chop ettirgan. Behbudiy yangi usul maktablari ochib, bolalarga zamonaviy ta'lim berish uchun kurashgan. Uning asarlari o'zbek adabiyoti tarixida muhim o'rin egallaydi.`
+    hayot: `Mahmudxo'ja Behbudiy O'rta Osiyo jadidchilik harakatining yetakchi namoyandalaridan biri bo'lib, uning faoliyati ta'lim, matbuot va adabiyot sohalarini qamrab olgan. Behbudiy 1911-yilda "Padarkush" nomli dramani yozgan — bu o'zbek milliy dramaturgiyasining ilk namunalaridan biri. Behbudiy yangi usul maktablari ochib, bolalarga zamonaviy ta'lim berish uchun kurashgan.`,
+    asar: `Behbudiyning asosiy asarlari:\n\n• "Padarkush" (1911) — O'zbek milliy dramaturgiyasining ilk dramasi\n• "Oyina" jurnali (1913)\n• "Taraqqiy" gazetasidagi maqolalar\n• "Maktabi islom" — Ta'lim sohasidagi asarlar`,
+    audio: { bio: null, hayot: null, asar: null }
   },
+
+  // 2. FITRAT
   {
-    id: "fitrat",
-    name: "Abdurauf Fitrat",
-    years: "1886 – 1938",
-    initials: "F",
-    bio: `Abdurauf Fitrat 1886-yilda Buxoroda tug'ilgan. U Buxorodagi an'anaviy madrasada ta'lim olgan, so'ngra Istanbulga borib o'qishni davom ettirgan. Turkiyada zamonaviy ta'lim va jadidchilik g'oyalari bilan tanishgan. 1909-yilda "Munozara" asarini yozgan. Buxoroga qaytgach, jadidchilik harakatini faol ravishda targ'ib qilgan. 1917-yildan keyin sovet hokimiyati davrida ham faoliyatini davom ettirgan. U Toshkent va Samarqand universitetlarida dars bergan. 1938-yilda siyosiy qatag'on qurboni bo'lib, otib tashlangan.`,
-    hayot: `Abdurauf Fitrat o'zbek adabiyoti, tili va tarixiga ulkan hissa qo'shgan. U dramaturgi, shoir, olim va publitsist sifatida tanilgan. "Munozara", "Hind sayyohi", "Qiyomat", "Abulfayzxon" kabi asarlari o'zbek adabiyotining durdonalari hisoblanadi. Fitrat o'zbek tilshunosligiga ham katta hissa qo'shgan — u o'zbek tilining grammatikasi va imlosini tartibga solishda ishtirok etgan. Uning ilmiy ishlari hozir ham o'zbek tilshunosligida muhim manba sanaladi. Fitrat jadidchilik mafkurasini rivojlantirishda Behbudiy bilan birga yetakchi o'rin tutgan.`
+    id: "fitrat", name: "Abdurauf Fitrat", years: "1886 – 1938", initials: "F",
+    bio: `Abdurauf Fitrat 1886-yilda Buxoroda tug'ilgan. U Buxorodagi an'anaviy madrasada ta'lim olgan, so'ngra Istanbulga borib o'qishni davom ettirgan. Turkiyada zamonaviy ta'lim va jadidchilik g'oyalari bilan tanishgan. 1909-yilda "Munozara" asarini yozgan. 1938-yilda siyosiy qatag'on qurboni bo'lib, otib tashlangan.`,
+    hayot: `Abdurauf Fitrat o'zbek adabiyoti, tili va tarixiga ulkan hissa qo'shgan. U dramaturgi, shoir, olim va publitsist sifatida tanilgan. Fitrat o'zbek tilshunosligiga ham katta hissa qo'shgan.`,
+    asar: `Fitratning asosiy asarlari:\n\n• "Munozara" (1909)\n• "Hind sayyohi"\n• "Qiyomat"\n• "Abulfayzxon"\n• "O'zbek adabiyoti namunalari"`,
+    audio: { bio: null, hayot: null, asar: null }
   },
+
+  // 3. CHO'LPON
   {
-    id: "cholpon",
-    name: "Abdulhamid Cho'lpon",
-    years: "1897 – 1938",
-    initials: "CH",
-    bio: `Abdulhamid Sulaymon o'g'li Cho'lpon 1897-yilda Andijon shahrida tug'ilgan. U rus-tuzem maktabida ta'lim olgan. Yoshligidan she'r yoza boshlagan va adabiyotga qiziqishi kuchli bo'lgan. 1917-yilgi inqilobdan keyin ijtimoiy-siyosiy faoliyatini kuchaytirgan. U bir qancha gazetalarda muharrir va muxbir bo'lib ishlagan. 1920-yillarda Toshkentda yashab, faol ijod qilgan. 1937-yilda hibsga olingan va 1938-yilda otib tashlangan. Cho'lpon "Kecha va kunduz" romani bilan o'zbek nasriga yangi sahifa ochgan.`,
-    hayot: `Abdulhamid Cho'lpon o'zbek she'riyati va nasrining yirik vakili sifatida tarixga kirgan. Uning she'rlari o'zbek xalqining ozodlikka intilishini, milliy his-tuyg'ularini yorqin ifodalagan. "Bahor" to'plami uning eng mashhur she'riy asarlarini o'z ichiga oladi. "Kecha va kunduz" romani o'zbek romanchiligining rivojlanishida muhim bosqich bo'ldi. Cho'lpon shuningdek Shekspir, Pushkin kabi jahon adabiyoti klassiklarini o'zbek tiliga tarjima qilgan. U dramaturgiya sohasida ham qalam tebratgan. Uning ijodi o'zbek adabiy merosining ajralmas qismiga aylangan.`
+    id: "cholpon", name: "Abdulhamid Cho'lpon", years: "1897 – 1938", initials: "CH",
+    bio: `Abdulhamid Sulaymon o'g'li Cho'lpon 1897-yilda Andijon shahrida tug'ilgan. U rus-tuzem maktabida ta'lim olgan. Yoshligidan she'r yoza boshlagan. 1937-yilda hibsga olingan va 1938-yilda otib tashlangan.`,
+    hayot: `Abdulhamid Cho'lpon o'zbek she'riyati va nasrining yirik vakili sifatida tarixga kirgan. "Kecha va kunduz" romani o'zbek romanchiligining rivojlanishida muhim bosqich bo'ldi. Cho'lpon Shekspir, Pushkin kabi jahon adabiyoti klassiklarini o'zbek tiliga tarjima qilgan.`,
+    asar: `Cho'lponning asosiy asarlari:\n\n• "Kecha va kunduz" (roman)\n• "Bahor" (she'riy to'plam)\n• Ko'plab she'rlar va tarjimalar`,
+    audio: { bio: null, hayot: null, asar: null }
   },
+
+  // 4. QODIRIY
   {
-    id: "qodiriy",
-    name: "Abdulla Qodiriy",
-    years: "1894 – 1938",
-    initials: "Q",
-    bio: `Abdulla Qodiriy 1894-yilda Toshkentning Qo'ymas mahallasida tug'ilgan. U rus-tuzem maktabida o'qigan. Yoshligidan adabiyotga va yozuvga qiziqib, ilk maqolalarini gazetalarda e'lon qilgan. 1915-yildan boshlab "Sadoi Turkiston" gazetasida ishlagan. 1917-yilgi inqilobdan keyin o'zbek matbuotida faol ishtirok etgan. Julqunboy taxallusi bilan yozgan hajviy asarlari mashhur bo'lgan. 1926-yilda "O'tkan kunlar" romani chop etilgan. 1937-yilda hibsga olingan va 1938-yilda otib tashlangan.`,
-    hayot: `Abdulla Qodiriy — o'zbek romanchiligining otasi sifatida e'tirof etilgan buyuk adib. Uning "O'tkan kunlar" (1926) va "Mehrobdan chayon" (1929) romanlari o'zbek adabiyotining oltin fondiga kirgan. "O'tkan kunlar" — o'zbek tilidagi ilk tarixiy roman bo'lib, Otabek va Kumush muhabbati orqali xalqimizning XIX asrdagi hayotini yorqin tasvirlaydi. Julqunboy taxallusi ostida yozilgan hajviy hikoyalar va felyetonlar o'sha davrning ijtimoiy illatlari ustidan kulgan. Qodiriy o'z asarlari orqali o'zbek nasrini yangi bosqichga ko'tardi.`
+    id: "qodiriy", name: "Abdulla Qodiriy", years: "1894 – 1938", initials: "Q",
+    bio: `Abdulla Qodiriy 1894-yilda Toshkentning Qo'ymas mahallasida tug'ilgan. 1926-yilda "O'tkan kunlar" romani chop etilgan. 1937-yilda hibsga olingan va 1938-yilda otib tashlangan.`,
+    hayot: `Abdulla Qodiriy — o'zbek romanchiligining otasi sifatida e'tirof etilgan buyuk adib. "O'tkan kunlar" — o'zbek tilidagi ilk tarixiy roman. Julqunboy taxallusi ostida yozilgan hajviy asarlari mashhur bo'lgan.`,
+    asar: `Qodiriyning asosiy asarlari:\n\n• "O'tkan kunlar" (1926)\n• "Mehrobdan chayon" (1929)\n• "Obid ketmon" (hikoya)\n• Julqunboy taxallusi bilan hajviy asarlar`,
+    audio: { bio: null, hayot: null, asar: null }
   },
+
+  // ================================================================
+  // 5. ABDULLA AVLONIY — MP3 FAYLLARI BOR!
+  // GitHub da audio/ papkasiga quyidagi fayllarni yuklang:
+  //   audio/avloniy_bio.mp3
+  //   audio/avloniy_hayot.mp3
+  //   audio/avloniy_asar.mp3
+  // ================================================================
   {
-    id: "avloniy",
-    name: "Abdulla Avloniy",
-    years: "1878 – 1934",
-    initials: "A",
-    bio: `Abdulla Avloniy 1878-yilda Toshkentda tug'ilgan. U an'anaviy maktabda ta'lim olgan va o'z ustida mustaqil ishlagan. 1904-yilda Toshkentda birinchi yangi usul maktabini ochgan. "Shuhrat" (1907) va "Osiyo" (1908) gazetalarini tashkil etgan. Darsliklar yozish va nashr etishga katta e'tibor bergan. 1917-yildan keyin sovet hokimiyatida ham ta'lim va madaniyat sohasida faoliyat yuritgan. Teatr sohasida ham muhim rol o'ynagan. 1934-yilda Toshkentda vafot etgan.`,
-    hayot: `Abdulla Avloniy ta'lim, adabiyot va teatr sohasida ko'p qirrali faoliyat olib borgan. Uning "Birinchi muallim" va "Ikkinchi muallim" darslik to'plamlari o'z davrida keng qo'llanilgan. Avloniy "Adabiyot yoxud milliy she'rlar" asarida o'zbek adabiyotining namunalarini to'plagan. Uning dramatik asarlari o'zbek teatrining shakllanishiga hissa qo'shgan. "Turk gulustoni" asari uning eng mashhur she'riy to'plamlaridan biridir. Avloniy yoshlarni milliy ruhda tarbiyalashga katta e'tibor bergan va bu maqsadda ko'plab she'r hamda maqolalar yozgan.`
+    id: "avloniy", name: "Abdulla Avloniy", years: "1878 – 1934", initials: "A",
+    // ↓ Matnni o'zingiz kiriting
+    bio: `[Bu yerga Avloniyning avtobiografiyasini kiriting]`,
+    hayot: `[Bu yerga Avloniyning hayoti va ijodini kiriting]`,
+    asar: `[Bu yerga Avloniyning asarlari haqida yozing]`,
+    // ↓ MP3 fayllari GitHub da bo'lsa shu URL ishlaydi
+    audio: {
+      bio:   BASE_URL + "/avloniy_bio.mp3",
+      hayot: BASE_URL + "/avloniy_hayot.mp3",
+      asar:  BASE_URL + "/avloniy_asar.mp3"
+    }
   },
+
+  // 6. MUNAVVAR QORI
   {
-    id: "munavvar",
-    name: "Munavvar Qori Abdurashidxonov",
-    years: "1878 – 1931",
-    initials: "M",
-    bio: `Munavvar Qori Abdurashidxonov 1878-yilda Toshkentda tug'ilgan. U an'anaviy diniy ta'lim olgan va qori bo'lgan. Keyin zamonaviy bilimlarni ham o'zlashtirgan. 1901-yilda Toshkentda birinchi yangi usul maktabini ochgan. "Xurshid" gazetasini tashkil etishda ishtirok etgan. Jadidchilik harakatining Toshkentdagi yetakchisi sifatida tanilgan. 1917-yildan keyin siyosiy faoliyatini kuchaytirgan. 1931-yilda sovet hokimiyati tomonidan otib tashlangan.`,
-    hayot: `Munavvar Qori O'rta Osiyodagi jadidchilik harakatining eng faol namoyandalaridan biri bo'lgan. U ta'lim sohasidagi islohotlarga katta hissa qo'shgan — yangi usul maktablari ochib, bolalarga zamonaviy ta'lim bergan. Uning darslik va o'quv qo'llanmalari o'sha davrda keng tarqalgan. Munavvar Qori siyosiy jihatdan ham faol bo'lib, milliy ozodlik g'oyalarini targ'ib qilgan. U o'zbek matbuotining rivojlanishida muhim rol o'ynagan va ko'plab gazeta-jurnal nashrlarini qo'llab-quvvatlagan.`
+    id: "munavvar", name: "Munavvar Qori Abdurashidxonov", years: "1878 – 1931", initials: "M",
+    bio: `Munavvar Qori Abdurashidxonov 1878-yilda Toshkentda tug'ilgan. 1901-yilda Toshkentda birinchi yangi usul maktabini ochgan. 1931-yilda sovet hokimiyati tomonidan otib tashlangan.`,
+    hayot: `Munavvar Qori O'rta Osiyodagi jadidchilik harakatining eng faol namoyandalaridan biri bo'lgan. U ta'lim sohasidagi islohotlarga katta hissa qo'shgan. Milliy ozodlik g'oyalarini targ'ib qilgan.`,
+    asar: `Munavvar Qorining asosiy asarlari:\n\n• "Adibi avval" (darslik)\n• "Adibi soniy" (darslik)\n• "Xurshid" gazetasi\n• Ko'plab maqolalar`,
+    audio: { bio: null, hayot: null, asar: null }
   },
+
+  // 7. HAMZA
   {
-    id: "hamza",
-    name: "Hamza Hakimzoda Niyoziy",
-    years: "1889 – 1929",
-    initials: "H",
-    bio: `Hamza Hakimzoda Niyoziy 1889-yilda Qo'qon shahrida tug'ilgan. U an'anaviy maktab va madrasada ta'lim olgan. Yoshligidan she'r yozishga qiziqib, adabiyotga berilib ketgan. 1911-yilda yangi usul maktabini ochgan. 1914-1915-yillarda bir qancha she'riy to'plamlar nashr ettirgan. 1917-yilgi inqilobdan keyin sovet hokimiyatini qo'llab-quvvatlagan. Xotin-qizlar ozodligi uchun kurashgan. 1929-yilda Shohimardon qishlog'ida muteassib kishilar tomonidan o'ldirilgan.`,
-    hayot: `Hamza Hakimzoda Niyoziy o'zbek sovet adabiyotining asoschisi sifatida e'tirof etiladi. Uning "Zaharli hayot yoxud ishq qurbonlari", "Boy ila xizmatchi" kabi dramalari o'sha davr ijtimoiy muammolarini keskin tasvirlagan. Hamza xotin-qizlarni yuzini ochishga, ta'lim olishga da'vat etgan va bu yo'lda jonini tikkan. Uning she'rlari oddiy xalq tiliga yaqin, tushunarli va ta'sirchan bo'lgan. Hamza maktab darsliklari ham yozgan va ta'lim sohasida faol ishlagan.`
+    id: "hamza", name: "Hamza Hakimzoda Niyoziy", years: "1889 – 1929", initials: "H",
+    bio: `Hamza Hakimzoda Niyoziy 1889-yilda Qo'qon shahrida tug'ilgan. 1929-yilda Shohimardon qishlog'ida muteassib kishilar tomonidan o'ldirilgan.`,
+    hayot: `Hamza Hakimzoda Niyoziy o'zbek sovet adabiyotining asoschisi sifatida e'tirof etiladi. Uning dramalari o'sha davr ijtimoiy muammolarini tasvirlagan. Hamza xotin-qizlarni ta'lim olishga da'vat etgan.`,
+    asar: `Hamzaning asosiy asarlari:\n\n• "Zaharli hayot yoxud ishq qurbonlari"\n• "Boy ila xizmatchi"\n• "Yosh yolg'onchilar"\n• Ko'plab she'rlar`,
+    audio: { bio: null, hayot: null, asar: null }
   },
+
+  // 8. GASPRINSKIY
   {
-    id: "ismoil",
-    name: "Ismoil Gasprinskiy",
-    years: "1851 – 1914",
-    initials: "G",
-    bio: `Ismoil Gasprinskiy 1851-yilda Qrimdagi Avjibekov qishlog'ida tug'ilgan. U rus va frantsuz tillarini mukammal o'rgangan. Moskvada o'qib, Parijda ham tahsil olgan. 1879-yilda Baxchisaroyda muallim bo'lib ishlay boshlagan. 1883-yilda "Tarjimon" gazetasini tashkil etgan — bu Turkiy xalqlar uchun birinchi zamonaviy gazeta bo'lgan. Butun hayoti davomida "Tilda, fikrda, ishda birlik" shiorini targ'ib qilgan. 1914-yilda Baxchisarayda vafot etgan.`,
-    hayot: `Ismoil Gasprinskiy butun turkiy musulmon dunyosida jadidchilik harakatining peshvosi sifatida tan olingan. U yangi usul maktablarini yaratdi va bu usul keyinchalik butun O'rta Osiyoga tarqaldi. "Tarjimon" gazetasi 1883-yildan 1914-yilgacha chiqib, turkiy xalqlarni birlashtiruvchi muhim nashr bo'lib xizmat qildi. Gasprinskiy turkiy xalqlarning birligini, zamonaviy ta'limni va islohni qo'llab-quvvatladi. Uning g'oyalari Behbudiy, Fitrat va boshqa o'zbek jadidlari faoliyatiga kuchli ta'sir ko'rsatdi.`
+    id: "ismoil", name: "Ismoil Gasprinskiy", years: "1851 – 1914", initials: "G",
+    bio: `Ismoil Gasprinskiy 1851-yilda Qrimdagi Avjibekov qishlog'ida tug'ilgan. 1883-yilda "Tarjimon" gazetasini tashkil etgan. 1914-yilda Baxchisarayda vafot etgan.`,
+    hayot: `Ismoil Gasprinskiy butun turkiy musulmon dunyosida jadidchilik harakatining peshvosi. U yangi usul maktablarini yaratdi. "Tarjimon" gazetasi turkiy xalqlarni birlashtiruvchi muhim nashr bo'ldi.`,
+    asar: `Gasprinskiyning asosiy asarlari:\n\n• "Tarjimon" gazetasi (1883–1914)\n• "Rahbar muallimin"\n• Ko'plab maqolalar va dasturlar`,
+    audio: { bio: null, hayot: null, asar: null }
   },
+
+  // 9. AYNIY
   {
-    id: "sadriddin",
-    name: "Sadriddin Ayniy",
-    years: "1878 – 1954",
-    initials: "S",
-    bio: `Sadriddin Ayniy 1878-yilda Buxoro viloyatining Soktare qishlog'ida tug'ilgan. U Buxorodagi madrasalarda tahsil olgan. Yoshligidan she'r yozgan. Jadidchilik harakatiga qo'shilgan va Buxoro amiri tomonidan 1917-yilda qamchilangan. Sovet davrida faol ijod qilgan. Tojikiston Fanlar akademiyasining birinchi prezidenti bo'lgan. O'zbek va tojik tillarida asarlar yaratgan. 1954-yilda Dushanbeda vafot etgan.`,
-    hayot: `Sadriddin Ayniy o'zbek va tojik adabiyotlarining buyuk namoyandasidir. Uning "Odina", "Qullar", "Dokhunda" romanlari o'rta osiyolik kishilarning og'ir hayotini realistik tarzda tasvirlagan. "Buxoro jallodlari" asari esa Buxoro amirligining zulmini fosh etgan. Ayniy xotiralar janrida ham qalam tebratgan — "Yoddashtho" (Esdaliklar) asari uning hayotini va o'sha davrni jonli tasvirlaydi. U o'zbek va tojik adabiy tillarining rivojlanishiga bebaho hissa qo'shgan.`
+    id: "sadriddin", name: "Sadriddin Ayniy", years: "1878 – 1954", initials: "S",
+    bio: `Sadriddin Ayniy 1878-yilda Buxoro viloyatida tug'ilgan. Tojikiston Fanlar akademiyasining birinchi prezidenti bo'lgan. 1954-yilda Dushanbeda vafot etgan.`,
+    hayot: `Sadriddin Ayniy o'zbek va tojik adabiyotlarining buyuk namoyandasidir. Uning romanlari o'rta osiyolik kishilarning hayotini realistik tarzda tasvirlagan.`,
+    asar: `Ayniyning asosiy asarlari:\n\n• "Odina"\n• "Qullar"\n• "Dokhunda"\n• "Buxoro jallodlari"\n• "Yoddashtho" (Esdaliklar)`,
+    audio: { bio: null, hayot: null, asar: null }
   },
+
+  // 10. UBAYDULLAXO'JA
   {
-    id: "ubaydulla",
-    name: "Ubaydullaxo'ja Asadullaxo'jayev",
-    years: "1878 – 1937",
-    initials: "U",
-    bio: `Ubaydullaxo'ja Asadullaxo'jayev 1878-yilda Toshkentda tug'ilgan. U diniy va dunyoviy ta'lim olgan. Toshkentdagi jadidchilik harakatining faol ishtirokchisi bo'lgan. Munavvar Qori bilan birga yangi usul maktablarini ochish va targ'ib qilishda faol qatnashgan. 1917-yildan keyin siyosiy hayotda ham faol bo'lgan. Turkiston muxtoriyatini qo'llab-quvvatlagan. 1937-yilda sovet qatag'oni qurboni bo'lgan.`,
-    hayot: `Ubaydullaxo'ja Toshkentdagi jadidchilik harakatida muhim o'rin tutgan. U ta'lim islohoti va xalq maorifi uchun faol kurashgan. Yangi usul maktablarini moliyalashtirishda va tashkil etishda katta rol o'ynagan. Siyosiy jihatdan milliy ozodlik harakatini qo'llab-quvvatlagan. Uning faoliyati Toshkentda jadidchilik g'oyalarining tarqalishiga muhim hissa qo'shgan.`
+    id: "ubaydulla", name: "Ubaydullaxo'ja Asadullaxo'jayev", years: "1878 – 1937", initials: "U",
+    bio: `Ubaydullaxo'ja Asadullaxo'jayev 1878-yilda Toshkentda tug'ilgan. Toshkentdagi jadidchilik harakatining faol ishtirokchisi. 1937-yilda sovet qatag'oni qurboni bo'lgan.`,
+    hayot: `Ubaydullaxo'ja Toshkentdagi jadidchilik harakatida muhim o'rin tutgan. U ta'lim islohoti va xalq maorifi uchun faol kurashgan.`,
+    asar: `Ubaydullaxo'janing faoliyati:\n\n• Yangi usul maktablarini tashkil etish\n• Jadidchilik harakatini moliyalashtirish\n• Milliy ozodlik harakatida ishtirok`,
+    audio: { bio: null, hayot: null, asar: null }
   },
+
+  // 11. NAZIR TO'RAQULOV
   {
-    id: "nazir",
-    name: "Nazir To'raqulov",
-    years: "1892 – 1937",
-    initials: "N",
-    bio: `Nazir To'raqulov 1892-yilda Toshkentda tug'ilgan. U zamonaviy ta'lim olgan va bir necha tillarni bilgan. Jadidchilik harakatiga yosh yoshda qo'shilgan. 1917-yildan keyin sovet tuzumi doirasida faoliyat ko'rsatgan. O'zbekiston Markaziy Ijroiya Qo'mitasi raisi lavozimida ishlagan. Bir necha yil chet elda diplomatik xizmatda bo'lgan. 1937-yilda siyosiy qatag'on qurboni bo'lib, otib tashlangan.`,
-    hayot: `Nazir To'raqulov jadidchilik va milliy ma'rifatchilik harakatida ishtirok etgan. U siyosiy va madaniy sohalarda faol bo'lgan. O'zbek matbuoti va adabiyotini rivojlantirishga hissa qo'shgan. Diplomatik faoliyati davomida O'zbekistonni xalqaro maydonda vakillik qilgan. Uning faoliyati o'zbek davlatchiligi shakllanishining murakkab davrini aks ettiradi.`
+    id: "nazir", name: "Nazir To'raqulov", years: "1892 – 1937", initials: "N",
+    bio: `Nazir To'raqulov 1892-yilda Toshkentda tug'ilgan. O'zbekiston Markaziy Ijroiya Qo'mitasi raisi bo'lgan. 1937-yilda otib tashlangan.`,
+    hayot: `Nazir To'raqulov jadidchilik harakatida ishtirok etgan. Diplomatik faoliyati davomida O'zbekistonni xalqaro maydonda vakillik qilgan.`,
+    asar: `To'raqulovning faoliyati:\n\n• Diplomatik xizmat\n• O'zbek matbuotini rivojlantirish\n• Davlat boshqaruvi`,
+    audio: { bio: null, hayot: null, asar: null }
   },
+
+  // 12. FERUZBEK
   {
-    id: "feruzbek",
-    name: "Feruzbek Qo'qandiy",
-    years: "1840 – 1909",
-    initials: "FK",
-    bio: `Feruzbek Qo'qandiy 1840-yilda Qo'qon shahrida tug'ilgan. U Qo'qon xonligida saroy shoiri sifatida tanilgan. Klassik o'zbek adabiyoti an'analarida ijod qilgan. Fors va o'zbek tillarida she'rlar yozgan. Qo'qon xonligi Rossiya tomonidan bosib olingandan keyin ham ijodiy faoliyatini davom ettirgan. Uning she'rlari o'sha davrning ijtimoiy-siyosiy vaziyatini aks ettirgan. 1909-yilda Qo'qonda vafot etgan.`,
-    hayot: `Feruzbek Qo'qandiy klassik o'zbek adabiyotining so'nggi yirik namoyandasidir. Uning she'rlari Qo'qon xonligi davridagi hayot, urf-odatlar va siyosiy voqealarni aks ettirgan. U g'azal, muxammas va boshqa klassik janrlarda ijod qilgan. Feruzbek she'riyati o'zbek klassik adabiyotining boy merosini davom ettirgan. Uning ijodi jadidchilik davridan oldingi o'zbek adabiy muhitini o'rganishda muhim manba hisoblanadi.`
+    id: "feruzbek", name: "Feruzbek Qo'qandiy", years: "1840 – 1909", initials: "FK",
+    bio: `Feruzbek Qo'qandiy 1840-yilda Qo'qon shahrida tug'ilgan. Qo'qon xonligida saroy shoiri. 1909-yilda vafot etgan.`,
+    hayot: `Feruzbek Qo'qandiy klassik o'zbek adabiyotining so'nggi yirik namoyandasidir. U g'azal, muxammas va boshqa klassik janrlarda ijod qilgan.`,
+    asar: `Feruzbek she'riyatidan:\n\n• G'azallar to'plami\n• Muxammaslar\n• Saroy she'riyati namunalari`,
+    audio: { bio: null, hayot: null, asar: null }
   },
 ];
 
-// ============================================================
+// ================================================================
 // HOLAT
-// ============================================================
+// ================================================================
 let selectedJadid = null;
-let currentType = null;
-let ttsAudio = null;
-let isPlaying = false;
-let history = ['jadidlar'];
+let currentType   = null;
+let navHistory    = ['jadidlar-page'];
 
-// ============================================================
+// ================================================================
 // SAHIFALAR
-// ============================================================
+// ================================================================
 function showPage(pageId) {
-  // Barcha sahifalarni yashirish
-  ['jadidlar-page', 'jadid-menu-page', 'content-page'].forEach(id => {
+  ['jadidlar-page','jadid-menu-page','content-page'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) {
-      el.classList.remove('active');
-      el.style.display = 'none';
-    }
+    el.classList.remove('active');
+    el.style.display = 'none';
   });
-
-  // Kerakli sahifani ko'rsatish
   const target = document.getElementById(pageId);
-  if (target) {
-    target.classList.add('active');
-    target.style.display = 'block';
-  }
+  target.classList.add('active');
+  target.style.display = 'block';
+  window.scrollTo(0, 0);
 
-  const backBtn = document.getElementById('back-btn');
+  const backBtn   = document.getElementById('back-btn');
   const headerSub = document.getElementById('header-sub');
-
   if (pageId === 'jadidlar-page') {
     backBtn.style.display = 'none';
     headerSub.textContent = 'Jadidni tanlang';
-  } else if (pageId === 'jadid-menu-page') {
+  } else {
     backBtn.style.display = 'flex';
-    headerSub.textContent = selectedJadid.name;
-  } else if (pageId === 'content-page') {
-    backBtn.style.display = 'flex';
-    headerSub.textContent = selectedJadid.name;
+    headerSub.textContent = selectedJadid ? selectedJadid.name : '';
   }
 }
 
 function goBack() {
-  stopTTS();
-  history.pop();
-  const prev = history[history.length - 1];
-  showPage(prev === 'jadidlar' ? 'jadidlar-page' : prev === 'menu' ? 'jadid-menu-page' : 'content-page');
+  stopAudio();
+  navHistory.pop();
+  showPage(navHistory[navHistory.length - 1]);
 }
 
-// ============================================================
-// JADIDLAR RO'YXATINI CHIQARISH
-// ============================================================
+// ================================================================
+// RO'YXAT
+// ================================================================
 function renderJadidlar(list) {
   const container = document.getElementById('jadidlar-list');
   container.innerHTML = '';
@@ -504,161 +354,80 @@ function renderJadidlar(list) {
         <h3>${jadid.name}</h3>
         <p>${jadid.years}</p>
       </div>
-      <span class="arrow">›</span>
-    `;
+      <span class="arrow">›</span>`;
     card.onclick = () => selectJadid(jadid);
     container.appendChild(card);
   });
 }
 
-function filterJadidlar(query) {
-  const filtered = jadidlar.filter(j =>
-    j.name.toLowerCase().includes(query.toLowerCase())
-  );
-  renderJadidlar(filtered);
+function filterJadidlar(q) {
+  renderJadidlar(jadidlar.filter(j => j.name.toLowerCase().includes(q.toLowerCase())));
 }
 
-// ============================================================
+// ================================================================
 // JADID TANLASH
-// ============================================================
+// ================================================================
 function selectJadid(jadid) {
   selectedJadid = jadid;
   document.getElementById('hero-avatar').textContent = jadid.initials;
-  document.getElementById('hero-name').textContent = jadid.name;
-  document.getElementById('hero-years').textContent = jadid.years;
-  history.push('menu');
+  document.getElementById('hero-name').textContent   = jadid.name;
+  document.getElementById('hero-years').textContent  = jadid.years;
+  navHistory.push('jadid-menu-page');
   showPage('jadid-menu-page');
 }
 
-// ============================================================
-// KONTENT KO'RSATISH
-// ============================================================
+// ================================================================
+// KONTENT
+// ================================================================
 function showContent(type) {
   currentType = type;
-  stopTTS();
+  stopAudio();
 
-  const title = type === 'bio'
-    ? `📖 ${selectedJadid.name} — Avtobiografiya`
-    : `🌟 ${selectedJadid.name} — Hayoti va ijodi`;
+  const titles = {
+    bio:   '📖 ' + selectedJadid.name + ' — Avtobiografiya',
+    hayot: '🌟 ' + selectedJadid.name + ' — Hayoti va ijodi',
+    asar:  '📝 ' + selectedJadid.name + ' — Asarlari'
+  };
 
-  const text = type === 'bio' ? selectedJadid.bio : selectedJadid.hayot;
+  document.getElementById('content-title').textContent = titles[type];
+  document.getElementById('content-text').textContent  = selectedJadid[type] || '(matn kiritilmagan)';
 
-  document.getElementById('content-title').textContent = title;
-  document.getElementById('content-text').textContent = text;
+  const audioUrl = selectedJadid.audio && selectedJadid.audio[type];
+  const player   = document.getElementById('audio-player');
+  const noAudio  = document.getElementById('no-audio-msg');
 
-  document.getElementById('tts-btn').className = 'tts-btn';
-  document.getElementById('tts-icon').textContent = '🎧';
-  document.getElementById('tts-label').textContent = 'Eshitish';
-  document.getElementById('tts-progress').style.display = 'none';
+  if (audioUrl) {
+    player.src = audioUrl;
+    player.load();
+    player.style.display = 'block';
+    noAudio.style.display = 'none';
+  } else {
+    player.src = '';
+    player.style.display = 'none';
+    noAudio.style.display = 'block';
+  }
 
-  history.push('content-page');
+  navHistory.push('content-page');
   showPage('content-page');
 }
 
-// ============================================================
-// TEXT-TO-SPEECH — Audio fayl orqali
-// ============================================================
-function toggleTTS() {
-  if (isPlaying) {
-    stopTTS();
-  } else {
-    startTTS();
-  }
+function stopAudio() {
+  const player = document.getElementById('audio-player');
+  if (player) { player.pause(); player.currentTime = 0; }
 }
 
-function startTTS() {
-  stopTTS();
-
-  // Audio fayl URL — GitHub Pages dan
-  const baseUrl = window.location.href.replace('/index.html', '').replace(/\/$/, '');
-  const audioUrl = `${baseUrl}/audio/${selectedJadid.id}_${currentType}.mp3`;
-
-  ttsAudio = new Audio(audioUrl);
-
-  ttsAudio.onplay = () => {
-    isPlaying = true;
-    updateTTSUI(true);
-  };
-
-  ttsAudio.onended = () => stopTTS();
-
-  ttsAudio.onerror = () => {
-    // Fallback: Web Speech API
-    const text = currentType === 'bio' ? selectedJadid.bio : selectedJadid.hayot;
-    fallbackTTS(text);
-  };
-
-  ttsAudio.play().catch(() => {
-    const text = currentType === 'bio' ? selectedJadid.bio : selectedJadid.hayot;
-    fallbackTTS(text);
-  });
-}
-
-function fallbackTTS(text) {
-  if (!('speechSynthesis' in window)) {
-    updateTTSUI(false);
-    alert('⚠️ Audio fayl topilmadi va qurilma ovoz funksiyasini qo\'llab-quvvatlamaydi.');
-    return;
-  }
-  isPlaying = true;
-  updateTTSUI(true);
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'uz-UZ';
-  utterance.rate = 0.85;
-  utterance.onend = () => stopTTS();
-  utterance.onerror = () => stopTTS();
-  window.speechSynthesis.speak(utterance);
-}
-
-function stopTTS() {
-  isPlaying = false;
-  if (ttsAudio) {
-    ttsAudio.pause();
-    ttsAudio.src = '';
-    ttsAudio = null;
-  }
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-  }
-  updateTTSUI(false);
-}
-
-function updateTTSUI(playing) {
-  const btn = document.getElementById('tts-btn');
-  const icon = document.getElementById('tts-icon');
-  const label = document.getElementById('tts-label');
-  const progress = document.getElementById('tts-progress');
-
-  if (playing) {
-    btn.className = 'tts-btn playing';
-    icon.textContent = '⏹';
-    label.textContent = 'To\'xtatish';
-    progress.style.display = 'block';
-  } else {
-    btn.className = 'tts-btn';
-    icon.textContent = '🎧';
-    label.textContent = 'Eshitish';
-    progress.style.display = 'none';
-  }
-}
-
-// ============================================================
-// TELEGRAM WEB APP
-// ============================================================
+// ================================================================
+// TELEGRAM
+// ================================================================
 if (window.Telegram && window.Telegram.WebApp) {
   window.Telegram.WebApp.ready();
   window.Telegram.WebApp.expand();
 }
 
-// Sahifani yuklash
 document.addEventListener('DOMContentLoaded', function() {
-  // Birinchi sahifani majburiy ko'rsatish
-  const firstPage = document.getElementById('jadidlar-page');
-  if (firstPage) {
-    firstPage.style.display = 'block';
-    firstPage.classList.add('active');
-  }
+  const fp = document.getElementById('jadidlar-page');
+  fp.style.display = 'block';
+  fp.classList.add('active');
   renderJadidlar(jadidlar);
 });
 </script>
