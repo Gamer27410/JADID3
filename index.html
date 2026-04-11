@@ -99,6 +99,53 @@
     .menu-btn.bio   { background: linear-gradient(135deg, #2ecc71, #27ae60); }
     .menu-btn.hayot { background: linear-gradient(135deg, #3498db, #2980b9); }
     .menu-btn.asar  { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+    .menu-btn.pdf   { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+
+    /* PDF VIEWER */
+    .pdf-section {
+      background: rgba(255,255,255,0.05); border-radius: 14px;
+      padding: 14px; margin-bottom: 16px;
+    }
+    .pdf-section-title {
+      font-size: 0.78rem; color: rgba(255,255,255,0.45);
+      text-align: center; margin-bottom: 10px;
+    }
+    .pdf-actions {
+      display: flex; gap: 10px; margin-top: 10px;
+    }
+    .pdf-btn {
+      flex: 1; padding: 10px; border-radius: 10px; border: none;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; color: #fff;
+    }
+    .pdf-btn.view-btn     { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+    .pdf-btn.download-btn { background: linear-gradient(135deg, #f39c12, #e67e22); }
+    .pdf-btn:active { transform: scale(0.97); }
+    .no-pdf-msg {
+      text-align: center; color: rgba(255,255,255,0.35);
+      font-size: 0.82rem; padding: 8px;
+    }
+
+    /* PDF inline viewer modal */
+    #pdf-modal {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.92); z-index: 999;
+      flex-direction: column;
+    }
+    #pdf-modal.open { display: flex; }
+    .pdf-modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; background: rgba(255,255,255,0.07);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .pdf-modal-title { font-size: 0.9rem; color: #f4d03f; font-weight: 600; }
+    .pdf-close-btn {
+      background: rgba(255,255,255,0.15); border: none; color: #fff;
+      padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.85rem;
+    }
+    #pdf-frame {
+      flex: 1; width: 100%; border: none; background: #fff;
+    }
 
     /* KONTENT */
     #content-page { padding: 16px; }
@@ -157,6 +204,9 @@
   <button class="menu-btn asar"  onclick="showContent('asar')">
     <span class="icon">📝</span> Asarlari
   </button>
+  <button class="menu-btn pdf" id="pdf-menu-btn" onclick="showPdfPage()">
+    <span class="icon">📄</span> Qo'shimcha ma'lumot (PDF)
+  </button>
 </div>
 
 <div id="content-page" class="page">
@@ -167,6 +217,36 @@
     <audio id="audio-player" class="audio-player" controls style="display:none;"></audio>
     <div class="no-audio-msg" id="no-audio-msg">🎵 Bu bo'lim uchun audio mavjud emas</div>
   </div>
+</div>
+
+<div id="pdf-page" class="page">
+  <div class="jadid-hero" style="margin-bottom:16px;">
+    <div class="jadid-hero-avatar" id="pdf-hero-avatar"></div>
+    <h2 id="pdf-hero-name" style="color:#f4d03f;font-size:1.05rem;"></h2>
+    <p style="font-size:0.8rem;color:rgba(255,255,255,0.5);">Qo'shimcha ma'lumot</p>
+  </div>
+  <div class="pdf-section">
+    <div class="pdf-section-title">📄 PDF Fayl</div>
+    <div id="pdf-available">
+      <p style="font-size:0.85rem;color:rgba(255,255,255,0.7);text-align:center;padding:8px 0;margin-bottom:8px;" id="pdf-filename-label"></p>
+      <div class="pdf-actions">
+        <button class="pdf-btn view-btn" onclick="openPdfViewer()">👁 Ko'rish</button>
+        <button class="pdf-btn download-btn" onclick="downloadPdf()">⬇️ Yuklab olish</button>
+      </div>
+    </div>
+    <div id="pdf-unavailable" class="no-pdf-msg">
+      📄 Bu jadid uchun PDF fayl hali yuklanmagan
+    </div>
+  </div>
+</div>
+
+<!-- PDF Modal Viewer -->
+<div id="pdf-modal">
+  <div class="pdf-modal-header">
+    <span class="pdf-modal-title" id="pdf-modal-title">📄 PDF Ko'rish</span>
+    <button class="pdf-close-btn" onclick="closePdfViewer()">✕ Yopish</button>
+  </div>
+  <iframe id="pdf-frame" src=""></iframe>
 </div>
 
 <script>
@@ -271,7 +351,8 @@ Mahmudxo‘ja Behbudiy o‘zbek ma’rifatparvarlik harakatining asoschisi va ja
     audio: { bio: BASE_URL + "/behbudiy_bio.MP3", 
             hayot: BASE_URL + "/behbudiy_hayot.MP3", 
             asar: BASE_URL + "/behbudiy_asar.MP3"
-    }
+    },
+    pdf: null
   },
 
   // 2. FITRAT
@@ -299,7 +380,8 @@ Bundan tashqari, Fitrat o‘zining publitsistik maqolalari va "Yana yong‘in", 
     audio: { bio: BASE_URL + "/fitrat_bio.MP3", 
             hayot: BASE_URL + "/fitrat_hayot.MP3", 
             asar: BASE_URL + "/fitrat_asar.MP3"
-    }
+    },
+    pdf: null
   },
 
   // 3. CHO'LPON
@@ -331,7 +413,8 @@ Tarjima san’atida Cho‘lpon jahon adabiyoti durdonalarini o‘zbek tiliga mah
     audio: { bio: BASE_URL + "/cholpon_bio.MP3", 
             hayot: BASE_URL + "/cholpon_hayot.MP3", 
             asar: BASE_URL + "/cholpon_asar.MP3"
-    }
+    },
+    pdf: null
   },
 
   // 4. QODIRIY
@@ -358,7 +441,8 @@ Uning ijodiy cho‘qqisi o‘zbek romanchiligiga asos solgan "O‘tkan kunlar" (
 Badiiy nasrning kichik janrlarida ham samarali ijod qilib, "Juvonboz" (1915), "Uloqda" (1916) kabi hikoyalari va milliy dramaturgiyaga qo‘shilgan muhim hissa — "Baxtsiz kuyov" (1915) dramasini yozdi. Publisistika va hajviyot sohasida "Mushtum" jurnalidagi faoliyati davomida "Kalvak Maxzumning xotira daftaridan" hamda "Toshpo‘lat tajang nima deydi?" kabi turkum hajviy asarlari orqali jamiyatdagi illatlarni o‘tkir tanqid ostiga oldi.
 
 She’riyatda esa "Ahvoli mahzunimiz", "To‘y", "Millatimga" kabi she’rlari bilan xalqni ma’rifat va uyg‘onishga chorladi. Abdulla Qodiriy asarlari o‘zbek tilining boyligi va latofatini namoyon etuvchi o‘lmas manbadir.`,
-    audio: { bio: BASE_URL + "/qodiriy_bio.mp3", hayot: null, asar: null }
+    audio: { bio: null, hayot: null, asar: null },
+    pdf: null
   },
 
   // ================================================================
@@ -520,7 +604,8 @@ Uning eng mashhur asarlari va darsliklari quyidagilardan iborat:
 "Tajvidul Qur’on": Qur’on qiroati qoidalariga bag‘ishlangan asar.
 
 Shuningdek, u yuzlab publitsistik maqolalar muallifidir. Uning "Bizning holimiz", "Islohot kerak" kabi maqolalarida xalqni uyg‘onishga, eskilik sarqitlaridan voz kechib, ilm-fanni egallashga chorlovchi o‘tkir mulohazalar ilgari surilgan. Munavvar qori o‘zining she’riy asarlari bilan ham milliy g‘urur va istiqlol g‘oyalarini tarannum etgan`,
-    audio: { bio: null, hayot: null, asar: null }
+    audio: { bio: null, hayot: null, asar: null },
+    pdf: null
   },
 
   // 7. HAMZA
@@ -561,7 +646,8 @@ Pedagogika va darsliklar: Jadid maktablari uchun "Yengil adabiyot", "O‘qish ki
 Musiqa: Hamza mohir kompozitor sifatida o‘z she’rlariga kuy bastalagan. Uning "Yana", "Holingiz", "Dardiga darmon istamas" kabi o‘nlab qo‘shiqlari va marshlari xalq orasida keng tarqalgan.
 
 Hamza o‘z asarlari orqali o‘zbek adabiyotiga yangi shakl va ijtimoiy o‘tkir mavzularni olib kirdi.`,
-    audio: { bio: null, hayot: null, asar: null }
+    audio: { bio: null, hayot: null, asar: null },
+    pdf: null
   },
 
   // 8. GASPRINSKIY
@@ -622,7 +708,8 @@ Matbuot faoliyati
 "Olam-i nisvon" (Ayollar olami): Musulmon ayollari uchun mo‘ljallangan ilk jurnallardan biri bo‘lib, xotin-qizlar ma’rifati masalalarini yoritgan.
 
 Ismoilbek Gasprinskiyning har bir asari "Tilda, fikrda, ishda birlik" shiorini amalga oshirishga va millatni jaholatdan qutqarishga xizmat qilgan.`,
-    audio: { bio: null, hayot: null, asar: null }
+    audio: { bio: null, hayot: null, asar: null },
+    pdf: null
   },
 
   // 9. AYNIY
@@ -675,7 +762,8 @@ Tarixiy tadqiqotlar: U Firdavsiy, Rudakiy, Sa’diy Sheroziy, Ibn Sino va Alishe
 
 She’riyati
 Ayniy dastlab "Sifliy" va keyinchalik "Ayniy" taxalluslari bilan g‘azallar va qasidalar yozgan. Uning she’rlarida klassik adabiyot an’analari bilan birga zamonaviy uyg‘onish ruhidagi g‘oyalar ham aks etgan.`,
-    audio: { bio: null, hayot: null, asar: null }
+    audio: { bio: null, hayot: null, asar: null },
+    pdf: null
   },
 
   // 10. UBAYDULLAXO'JA
@@ -714,7 +802,8 @@ Huquqiy qo‘llanmalar: Professional huquqshunos sifatida u xalq uchun qonunlarn
 Tahririyat faoliyati: U nafaqat o‘z maqolalari, balki Munavvar qori, Cho‘lpon, Abdulla Qodiriy kabi yosh ijodkorlarning milliy ruhdagi asarlarini nashr etish orqali yangi o‘zbek adabiyoti va matbuotining rivojlanishiga sharoit yaratib bergan.
 
 Ubaydullaxo‘ja Asadullaxo‘jayevning "asari" deganda, ko‘z oldimizga avvalo u asos solgan erkin matbuot va u tuzishda qatnashgan Turkiston Muxtoriyatining huquqiy hujjatlari keladi. Uning yozganlari o‘sha davrning eng qaynoq siyosiy va ijtimoiy xronikasi hisoblanadi.`,
-    audio: { bio: null, hayot: null, asar: null }
+    audio: { bio: null, hayot: null, asar: null },
+    pdf: null
   },
 
   // 11. NAZIR TO'RAQULOV
@@ -768,7 +857,8 @@ Diplomatik hisobotlar va yozishmalar: Uning Saudiya Arabistonidagi elchilik davr
 Matbuotdagi chiqishlari: "Inqilob", "Maorif va o‘qituvchi" kabi jurnallarda chop etilgan yuzlab maqolalari xalqning siyosiy savodxonligini oshirishga xizmat qilgan.
 
 Nazir To‘raqulovning asarlari o‘z davrida o‘zbek tilining ilmiy salohiyatini ko‘rsatib berishda va milliy davlatchilik asoslarini huquqiy-ma’rifiy jihatdan asoslashda muhim rol o‘ynagan.`,
-    audio: { bio: null, hayot: null, asar: null }
+    audio: { bio: null, hayot: null, asar: null },
+    pdf: null
   },
 
   // 12. FERUZBEK
@@ -852,7 +942,8 @@ Garchi u ko‘proq munaqqid va pedagog sifatida tanilgan bo‘lsa-da, uning ijod
 Nasriy va she’riy mashqlar: Turli adabiy kechalar va shaxsiy sahifalarida e’lon qilib boriladigan, milliy ruh va sog‘inch mavzusidagi kichik lirik asarlari mavjud.
 
 Feruzbek Qo‘qandiyning asosiy xizmati — u o‘z asarlari bilan o‘zbek tili va adabiyotini "muzeydagi eksponat" emas, balki "yashayotgan va nafas olayotgan xazina" sifatida yoshlar qalbiga yetkazib bera olganidadir.`,
-    audio: { bio: null, hayot: null, asar: null }
+    audio: { bio: null, hayot: null, asar: null },
+    pdf: null
   },
 ];
 
@@ -867,7 +958,7 @@ let navHistory    = ['jadidlar-page'];
 // SAHIFALAR
 // ================================================================
 function showPage(pageId) {
-  ['jadidlar-page','jadid-menu-page','content-page'].forEach(id => {
+  ['jadidlar-page','jadid-menu-page','content-page','pdf-page'].forEach(id => {
     const el = document.getElementById(id);
     el.classList.remove('active');
     el.style.display = 'none';
@@ -969,6 +1060,55 @@ function showContent(type) {
 function stopAudio() {
   const player = document.getElementById('audio-player');
   if (player) { player.pause(); player.currentTime = 0; }
+}
+
+// ================================================================
+// PDF SAHIFASI
+// ================================================================
+function showPdfPage() {
+  stopAudio();
+  document.getElementById('pdf-hero-avatar').textContent = selectedJadid.initials;
+  document.getElementById('pdf-hero-name').textContent   = selectedJadid.name;
+
+  const pdfUrl = selectedJadid.pdf;
+  const avail  = document.getElementById('pdf-available');
+  const unavail = document.getElementById('pdf-unavailable');
+
+  if (pdfUrl) {
+    avail.style.display   = 'block';
+    unavail.style.display = 'none';
+    const fname = pdfUrl.split('/').pop();
+    document.getElementById('pdf-filename-label').textContent = '📎 ' + fname;
+    document.getElementById('pdf-modal-title').textContent = '📄 ' + selectedJadid.name;
+  } else {
+    avail.style.display   = 'none';
+    unavail.style.display = 'block';
+  }
+
+  navHistory.push('pdf-page');
+  showPage('pdf-page');
+}
+
+function openPdfViewer() {
+  if (!selectedJadid || !selectedJadid.pdf) return;
+  document.getElementById('pdf-frame').src = selectedJadid.pdf;
+  document.getElementById('pdf-modal').classList.add('open');
+}
+
+function closePdfViewer() {
+  document.getElementById('pdf-modal').classList.remove('open');
+  document.getElementById('pdf-frame').src = '';
+}
+
+function downloadPdf() {
+  if (!selectedJadid || !selectedJadid.pdf) return;
+  const a = document.createElement('a');
+  a.href = selectedJadid.pdf;
+  a.download = selectedJadid.id + '_malumot.pdf';
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 // ================================================================
