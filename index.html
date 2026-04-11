@@ -129,7 +129,7 @@
     /* PDF inline viewer modal */
     #pdf-modal {
       display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.92); z-index: 999;
+      background: rgba(0,0,0,0.97); z-index: 999;
       flex-direction: column;
     }
     #pdf-modal.open { display: flex; }
@@ -137,14 +137,12 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 12px 16px; background: rgba(255,255,255,0.07);
       border-bottom: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
     }
     .pdf-modal-title { font-size: 0.9rem; color: #f4d03f; font-weight: 600; }
     .pdf-close-btn {
       background: rgba(255,255,255,0.15); border: none; color: #fff;
       padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.85rem;
-    }
-    #pdf-frame {
-      flex: 1; width: 100%; border: none; background: #fff;
     }
 
     /* KONTENT */
@@ -233,6 +231,11 @@
         <button class="pdf-btn view-btn" onclick="openPdfViewer()">👁 Ko'rish</button>
         <button class="pdf-btn download-btn" onclick="downloadPdf()">⬇️ Yuklab olish</button>
       </div>
+      <div class="pdf-actions" style="margin-top:8px;">
+        <button class="pdf-btn" onclick="openPdfDirect()" style="background:linear-gradient(135deg,#1abc9c,#16a085);">
+          🌐 Brauzerda ochish
+        </button>
+      </div>
     </div>
     <div id="pdf-unavailable" class="no-pdf-msg">
       📄 Bu jadid uchun PDF fayl hali yuklanmagan
@@ -246,7 +249,17 @@
     <span class="pdf-modal-title" id="pdf-modal-title">📄 PDF Ko'rish</span>
     <button class="pdf-close-btn" onclick="closePdfViewer()">✕ Yopish</button>
   </div>
-  <iframe id="pdf-frame" src=""></iframe>
+  <div id="pdf-modal-body" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+    <!-- iframe (desktop) -->
+    <iframe id="pdf-frame" src="" style="flex:1;width:100%;border:none;background:#fff;display:none;"></iframe>
+    <!-- Google Docs viewer fallback -->
+    <iframe id="pdf-gdocs" src="" style="flex:1;width:100%;border:none;background:#fff;display:none;" allow="fullscreen"></iframe>
+    <!-- Loading -->
+    <div id="pdf-loading" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;gap:14px;">
+      <div style="font-size:2.5rem;">📄</div>
+      <div style="font-size:1rem;color:#f4d03f;">Yuklanmoqda...</div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -352,7 +365,7 @@ Mahmudxo‘ja Behbudiy o‘zbek ma’rifatparvarlik harakatining asoschisi va ja
             hayot: BASE_URL + "/behbudiy_hayot.MP3", 
             asar: BASE_URL + "/behbudiy_asar.MP3"
     },
-    pdf: BASE_URL + "/behbudi_malumot.pdf"
+    pdf: null
   },
 
   // 2. FITRAT
@@ -1070,8 +1083,8 @@ function showPdfPage() {
   document.getElementById('pdf-hero-avatar').textContent = selectedJadid.initials;
   document.getElementById('pdf-hero-name').textContent   = selectedJadid.name;
 
-  const pdfUrl = selectedJadid.pdf;
-  const avail  = document.getElementById('pdf-available');
+  const pdfUrl  = selectedJadid.pdf;
+  const avail   = document.getElementById('pdf-available');
   const unavail = document.getElementById('pdf-unavailable');
 
   if (pdfUrl) {
@@ -1089,26 +1102,128 @@ function showPdfPage() {
   showPage('pdf-page');
 }
 
+// Telefon/desktop aniqlash
+function isMobile() {
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+}
+
 function openPdfViewer() {
   if (!selectedJadid || !selectedJadid.pdf) return;
-  document.getElementById('pdf-frame').src = selectedJadid.pdf;
-  document.getElementById('pdf-modal').classList.add('open');
+  const pdfUrl = selectedJadid.pdf;
+
+  const modal   = document.getElementById('pdf-modal');
+  const frame   = document.getElementById('pdf-frame');
+  const gdocs   = document.getElementById('pdf-gdocs');
+  const loading = document.getElementById('pdf-loading');
+
+  // Avval loading ko'rsat
+  frame.style.display   = 'none';
+  gdocs.style.display   = 'none';
+  loading.style.display = 'flex';
+  modal.classList.add('open');
+
+  if (isMobile()) {
+    // Telefon: Google Docs viewer (barcha telefonda ishlaydi)
+    const gdocsUrl = 'https://docs.google.com/viewer?embedded=true&url=' + encodeURIComponent(pdfUrl);
+    gdocs.src = gdocsUrl;
+    gdocs.onload = function() {
+      loading.style.display = 'none';
+      gdocs.style.display   = 'flex';
+    };
+    // 15 soniyadan so'ng yuklanmasa — to'g'ridan-to'g'ri ochish taklif qilish
+    setTimeout(function() {
+      if (loading.style.display !== 'none') {
+        loading.innerHTML = `
+          <div style="font-size:1.8rem;">⚠️</div>
+          <div style="font-size:0.95rem;color:#f4d03f;text-align:center;padding:0 20px;">
+            Ko'rish sekin yuklanyapti.<br>To'g'ridan-to'g'ri ochishni tavsiya qilamiz.
+          </div>
+          <button onclick="openPdfDirect()" style="
+            background:linear-gradient(135deg,#e74c3c,#c0392b);
+            border:none;color:#fff;padding:12px 24px;
+            border-radius:12px;font-size:0.95rem;font-weight:600;cursor:pointer;margin-top:4px;">
+            🌐 Brauzerda ochish
+          </button>`;
+      }
+    }, 15000);
+  } else {
+    // Desktop: oddiy iframe
+    frame.src = pdfUrl;
+    frame.onload = function() {
+      loading.style.display = 'none';
+      frame.style.display   = 'flex';
+    };
+  }
+}
+
+function openPdfDirect() {
+  if (!selectedJadid || !selectedJadid.pdf) return;
+  window.open(selectedJadid.pdf, '_blank');
+  closePdfViewer();
 }
 
 function closePdfViewer() {
-  document.getElementById('pdf-modal').classList.remove('open');
-  document.getElementById('pdf-frame').src = '';
+  const modal   = document.getElementById('pdf-modal');
+  const frame   = document.getElementById('pdf-frame');
+  const gdocs   = document.getElementById('pdf-gdocs');
+  const loading = document.getElementById('pdf-loading');
+  modal.classList.remove('open');
+  frame.src   = '';
+  gdocs.src   = '';
+  frame.style.display   = 'none';
+  gdocs.style.display   = 'none';
+  loading.style.display = 'flex';
+  loading.innerHTML = `
+    <div style="font-size:2.5rem;">📄</div>
+    <div style="font-size:1rem;color:#f4d03f;">Yuklanmoqda...</div>`;
 }
 
-function downloadPdf() {
+async function downloadPdf() {
   if (!selectedJadid || !selectedJadid.pdf) return;
-  const a = document.createElement('a');
-  a.href = selectedJadid.pdf;
-  a.download = selectedJadid.id + '_malumot.pdf';
-  a.target = '_blank';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  const pdfUrl  = selectedJadid.pdf;
+  const fname   = selectedJadid.id + '_malumot.pdf';
+  const dlBtn   = document.querySelector('.pdf-btn.download-btn');
+
+  // Tugmani bloklash
+  dlBtn.disabled    = true;
+  dlBtn.textContent = '⏳ Yuklanmoqda...';
+
+  if (isMobile()) {
+    // Telefon: fetch + blob orqali yuklash
+    try {
+      const resp = await fetch(pdfUrl);
+      if (!resp.ok) throw new Error('Network error');
+      const blob = await resp.blob();
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = fname;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      dlBtn.textContent = '✅ Yuklandi!';
+    } catch (e) {
+      // Blob ishlamasa — to'g'ridan-to'g'ri ochish
+      window.open(pdfUrl, '_blank');
+      dlBtn.textContent = '⬇️ Yuklab olish';
+    }
+  } else {
+    // Desktop: oddiy <a download>
+    const a    = document.createElement('a');
+    a.href     = pdfUrl;
+    a.download = fname;
+    a.target   = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    dlBtn.textContent = '✅ Yuklandi!';
+  }
+
+  setTimeout(() => {
+    dlBtn.disabled    = false;
+    dlBtn.textContent = '⬇️ Yuklab olish';
+  }, 3000);
 }
 
 // ================================================================
