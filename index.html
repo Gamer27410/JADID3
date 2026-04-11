@@ -229,7 +229,7 @@
       <p style="font-size:0.85rem;color:rgba(255,255,255,0.7);text-align:center;padding:8px 0;margin-bottom:8px;" id="pdf-filename-label"></p>
       <div class="pdf-actions">
         <button class="pdf-btn view-btn" onclick="openPdfViewer()">👁 Ko'rish</button>
-        <button class="pdf-btn download-btn" onclick="downloadPdf()">⬇️ Yuklab olish</button>
+        <button class="pdf-btn download-btn" onclick="downloadPdf()">⬇️ Yuklab olish uchun Pastga bosing</button>
       </div>
       <div class="pdf-actions" style="margin-top:8px;">
         <button class="pdf-btn" onclick="openPdfDirect()" style="background:linear-gradient(135deg,#1abc9c,#16a085);">
@@ -365,7 +365,7 @@ Mahmudxo‘ja Behbudiy o‘zbek ma’rifatparvarlik harakatining asoschisi va ja
             hayot: BASE_URL + "/behbudiy_hayot.MP3", 
             asar: BASE_URL + "/behbudiy_asar.MP3"
     },
-    pdf: BASE_URL + "/behbudi_malumot.pdf"
+    pdf: null
   },
 
   // 2. FITRAT
@@ -1206,7 +1206,7 @@ async function downloadPdf() {
     } catch (e) {
       // Blob ishlamasa — to'g'ridan-to'g'ri ochish
       window.open(pdfUrl, '_blank');
-      dlBtn.textContent = '⬇️ Yuklab olish';
+      dlBtn.textContent = '⬇️ Yuklab olish uchun Pastga bosing';
     }
   } else {
     // Desktop: oddiy <a download>
@@ -1222,7 +1222,7 @@ async function downloadPdf() {
 
   setTimeout(() => {
     dlBtn.disabled    = false;
-    dlBtn.textContent = '⬇️ Yuklab olish';
+    dlBtn.textContent = '⬇️ Yuklab olish uchun Pastga bosing';
   }, 3000);
 }
 
