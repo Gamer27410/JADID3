@@ -99,7 +99,8 @@
     .menu-btn.bio   { background: linear-gradient(135deg, #2ecc71, #27ae60); }
     .menu-btn.hayot { background: linear-gradient(135deg, #3498db, #2980b9); }
     .menu-btn.asar  { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
-    .menu-btn.pdf   { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+    .menu-btn.pdf    { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+    .menu-btn.asarpdf{ background: linear-gradient(135deg, #d35400, #a04000); }
 
     /* PDF VIEWER */
     .pdf-section {
@@ -169,6 +170,39 @@
       font-size: 0.82rem; padding: 8px; display: none;
     }
 
+    /* ASARLARI PDF CARDS */
+    .asarpdf-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(212,84,0,0.25);
+      border-radius: 14px; padding: 12px 14px; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .asarpdf-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, #d35400, #a04000);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: bold; color: #fff; flex-shrink: 0;
+    }
+    .asarpdf-info { flex: 1; min-width: 0; }
+    .asarpdf-name {
+      font-size: 0.88rem; color: #fff; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .asarpdf-fname {
+      font-size: 0.72rem; color: rgba(255,255,255,0.4); margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .asarpdf-btns { display: flex; gap: 6px; flex-shrink: 0; }
+    .asarpdf-btn {
+      padding: 7px 12px; border-radius: 10px; border: none;
+      font-size: 0.78rem; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; color: #fff;
+    }
+    .asarpdf-btn.view { background: linear-gradient(135deg, #d35400, #a04000); }
+    .asarpdf-btn.dl   { background: linear-gradient(135deg, #f39c12, #e67e22); min-width: 36px; }
+    .asarpdf-btn:active { transform: scale(0.95); }
+    .asarpdf-btn:disabled { opacity: 0.6; }
+
     .page { display: none !important; }
     .page.active { display: block !important; }
   </style>
@@ -205,6 +239,9 @@
   <button class="menu-btn pdf" id="pdf-menu-btn" onclick="showPdfPage()">
     <span class="icon">📄</span> Qo'shimcha ma'lumot (PDF)
   </button>
+  <button class="menu-btn asarpdf" id="asarpdf-menu-btn" onclick="showAsarPdfPage()">
+    <span class="icon">📚</span> Asarlari (PDF)
+  </button>
 </div>
 
 <div id="content-page" class="page">
@@ -240,6 +277,21 @@
     <div id="pdf-unavailable" class="no-pdf-msg">
       📄 Bu jadid uchun PDF fayl hali yuklanmagan
     </div>
+  </div>
+</div>
+
+<!-- ASARLARI PDF PAGE -->
+<div id="asar-pdf-page" class="page">
+  <div class="jadid-hero" style="margin-bottom:16px;">
+    <div class="jadid-hero-avatar" id="asarpdf-hero-avatar"></div>
+    <h2 id="asarpdf-hero-name" style="color:#f4d03f;font-size:1.05rem;"></h2>
+    <p style="font-size:0.8rem;color:rgba(255,255,255,0.5);">📚 Asarlari (PDF)</p>
+  </div>
+  <div id="asarpdf-list-container">
+    <!-- PDF cards render here -->
+  </div>
+  <div id="asarpdf-empty" class="no-pdf-msg" style="display:none;padding:24px 0;">
+    📚 Bu jadid uchun asar PDFlari hali yuklanmagan
   </div>
 </div>
 
@@ -365,7 +417,8 @@ Mahmudxo‘ja Behbudiy o‘zbek ma’rifatparvarlik harakatining asoschisi va ja
             hayot: BASE_URL + "/behbudiy_hayot.MP3", 
             asar: BASE_URL + "/behbudiy_asar.MP3"
     },
-    pdf: BASE_URL + "/behbudi_malumot.pdf"
+    pdf: null,
+    asarlarPdf: []
   },
 
   // 2. FITRAT
@@ -394,7 +447,8 @@ Bundan tashqari, Fitrat o‘zining publitsistik maqolalari va "Yana yong‘in", 
             hayot: BASE_URL + "/fitrat_hayot.MP3", 
             asar: BASE_URL + "/fitrat_asar.MP3"
     },
-    pdf: null
+    pdf: null,
+    asarlarPdf: []
   },
 
   // 3. CHO'LPON
@@ -427,7 +481,8 @@ Tarjima san’atida Cho‘lpon jahon adabiyoti durdonalarini o‘zbek tiliga mah
             hayot: BASE_URL + "/cholpon_hayot.MP3", 
             asar: BASE_URL + "/cholpon_asar.MP3"
     },
-    pdf: null
+    pdf: null,
+    asarlarPdf: []
   },
 
   // 4. QODIRIY
@@ -455,7 +510,8 @@ Badiiy nasrning kichik janrlarida ham samarali ijod qilib, "Juvonboz" (1915), "U
 
 She’riyatda esa "Ahvoli mahzunimiz", "To‘y", "Millatimga" kabi she’rlari bilan xalqni ma’rifat va uyg‘onishga chorladi. Abdulla Qodiriy asarlari o‘zbek tilining boyligi va latofatini namoyon etuvchi o‘lmas manbadir.`,
     audio: { bio: null, hayot: null, asar: null },
-    pdf: null
+    pdf: null,
+    asarlarPdf: []
   },
 
   // ================================================================
@@ -580,7 +636,8 @@ Abdulla Avloniyning barcha asarlarini birlashtirib turadigan bitta bosh g‘oya 
       bio:   BASE_URL + "/avloniy_bio.MP3",
       hayot: BASE_URL + "/avloniy_hayot.MP3",
       asar:  BASE_URL + "/avloniy_asar.MP3"
-    }
+    },
+    asarlarPdf: []
   },
 
   // 6. MUNAVVAR QORI
@@ -618,7 +675,8 @@ Uning eng mashhur asarlari va darsliklari quyidagilardan iborat:
 
 Shuningdek, u yuzlab publitsistik maqolalar muallifidir. Uning "Bizning holimiz", "Islohot kerak" kabi maqolalarida xalqni uyg‘onishga, eskilik sarqitlaridan voz kechib, ilm-fanni egallashga chorlovchi o‘tkir mulohazalar ilgari surilgan. Munavvar qori o‘zining she’riy asarlari bilan ham milliy g‘urur va istiqlol g‘oyalarini tarannum etgan`,
     audio: { bio: null, hayot: null, asar: null },
-    pdf: null
+    pdf: null,
+    asarlarPdf: []
   },
 
   // 7. HAMZA
@@ -660,7 +718,8 @@ Musiqa: Hamza mohir kompozitor sifatida o‘z she’rlariga kuy bastalagan. Unin
 
 Hamza o‘z asarlari orqali o‘zbek adabiyotiga yangi shakl va ijtimoiy o‘tkir mavzularni olib kirdi.`,
     audio: { bio: null, hayot: null, asar: null },
-    pdf: null
+    pdf: null,
+    asarlarPdf: []
   },
 
   // 8. GASPRINSKIY
@@ -722,7 +781,8 @@ Matbuot faoliyati
 
 Ismoilbek Gasprinskiyning har bir asari "Tilda, fikrda, ishda birlik" shiorini amalga oshirishga va millatni jaholatdan qutqarishga xizmat qilgan.`,
     audio: { bio: null, hayot: null, asar: null },
-    pdf: null
+    pdf: null,
+    asarlarPdf: []
   },
 
   // 9. AYNIY
@@ -776,7 +836,8 @@ Tarixiy tadqiqotlar: U Firdavsiy, Rudakiy, Sa’diy Sheroziy, Ibn Sino va Alishe
 She’riyati
 Ayniy dastlab "Sifliy" va keyinchalik "Ayniy" taxalluslari bilan g‘azallar va qasidalar yozgan. Uning she’rlarida klassik adabiyot an’analari bilan birga zamonaviy uyg‘onish ruhidagi g‘oyalar ham aks etgan.`,
     audio: { bio: null, hayot: null, asar: null },
-    pdf: null
+    pdf: null,
+    asarlarPdf: []
   },
 
   // 10. UBAYDULLAXO'JA
@@ -816,7 +877,8 @@ Tahririyat faoliyati: U nafaqat o‘z maqolalari, balki Munavvar qori, Cho‘lpo
 
 Ubaydullaxo‘ja Asadullaxo‘jayevning "asari" deganda, ko‘z oldimizga avvalo u asos solgan erkin matbuot va u tuzishda qatnashgan Turkiston Muxtoriyatining huquqiy hujjatlari keladi. Uning yozganlari o‘sha davrning eng qaynoq siyosiy va ijtimoiy xronikasi hisoblanadi.`,
     audio: { bio: null, hayot: null, asar: null },
-    pdf: null
+    pdf: null,
+    asarlarPdf: []
   },
 
   // 11. NAZIR TO'RAQULOV
@@ -871,7 +933,8 @@ Matbuotdagi chiqishlari: "Inqilob", "Maorif va o‘qituvchi" kabi jurnallarda ch
 
 Nazir To‘raqulovning asarlari o‘z davrida o‘zbek tilining ilmiy salohiyatini ko‘rsatib berishda va milliy davlatchilik asoslarini huquqiy-ma’rifiy jihatdan asoslashda muhim rol o‘ynagan.`,
     audio: { bio: null, hayot: null, asar: null },
-    pdf: null
+    pdf: null,
+    asarlarPdf: []
   },
 
   // 12. FERUZBEK
@@ -956,7 +1019,8 @@ Nasriy va she’riy mashqlar: Turli adabiy kechalar va shaxsiy sahifalarida e’
 
 Feruzbek Qo‘qandiyning asosiy xizmati — u o‘z asarlari bilan o‘zbek tili va adabiyotini "muzeydagi eksponat" emas, balki "yashayotgan va nafas olayotgan xazina" sifatida yoshlar qalbiga yetkazib bera olganidadir.`,
     audio: { bio: null, hayot: null, asar: null },
-    pdf: null
+    pdf: null,
+    asarlarPdf: []
   },
 ];
 
@@ -971,7 +1035,7 @@ let navHistory    = ['jadidlar-page'];
 // SAHIFALAR
 // ================================================================
 function showPage(pageId) {
-  ['jadidlar-page','jadid-menu-page','content-page','pdf-page'].forEach(id => {
+  ['jadidlar-page','jadid-menu-page','content-page','pdf-page','asar-pdf-page'].forEach(id => {
     const el = document.getElementById(id);
     el.classList.remove('active');
     el.style.display = 'none';
@@ -1102,7 +1166,119 @@ function showPdfPage() {
   showPage('pdf-page');
 }
 
-// Telefon/desktop aniqlash
+// ================================================================
+// ASARLARI PDF SAHIFASI
+// ================================================================
+function showAsarPdfPage() {
+  stopAudio();
+  document.getElementById('asarpdf-hero-avatar').textContent = selectedJadid.initials;
+  document.getElementById('asarpdf-hero-name').textContent   = selectedJadid.name;
+
+  const list    = selectedJadid.asarlarPdf || [];
+  const container = document.getElementById('asarpdf-list-container');
+  const empty   = document.getElementById('asarpdf-empty');
+
+  if (list.length === 0) {
+    container.innerHTML   = '';
+    empty.style.display   = 'block';
+  } else {
+    empty.style.display   = 'none';
+    container.innerHTML   = list.map((item, i) => `
+      <div class="asarpdf-card">
+        <div class="asarpdf-num">${i + 1}</div>
+        <div class="asarpdf-info">
+          <div class="asarpdf-name">${item.name}</div>
+          <div class="asarpdf-fname">${item.file.split('/').pop()}</div>
+        </div>
+        <div class="asarpdf-btns">
+          <button class="asarpdf-btn view" onclick="openAsarPdf('${item.file}','${item.name.replace(/'/g,"\\'")}')">👁 Ko'rish</button>
+          <button class="asarpdf-btn dl"   onclick="downloadAsarPdf('${item.file}','${item.file.split('/').pop()}',this)">⬇️</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  navHistory.push('asar-pdf-page');
+  showPage('asar-pdf-page');
+}
+
+function openAsarPdf(url, title) {
+  const modal   = document.getElementById('pdf-modal');
+  const frame   = document.getElementById('pdf-frame');
+  const gdocs   = document.getElementById('pdf-gdocs');
+  const loading = document.getElementById('pdf-loading');
+  document.getElementById('pdf-modal-title').textContent = '📚 ' + title;
+
+  frame.style.display   = 'none';
+  gdocs.style.display   = 'none';
+  loading.style.display = 'flex';
+  loading.innerHTML = '<div style="font-size:2.5rem;">📄</div><div style="font-size:1rem;color:#f4d03f;">Yuklanmoqda...</div>';
+  modal.classList.add('open');
+
+  if (isMobile()) {
+    const gdocsUrl = 'https://docs.google.com/viewer?embedded=true&url=' + encodeURIComponent(url);
+    gdocs.src = gdocsUrl;
+    gdocs.onload = function() {
+      loading.style.display = 'none';
+      gdocs.style.display   = 'flex';
+    };
+    setTimeout(function() {
+      if (loading.style.display !== 'none') {
+        loading.innerHTML = `
+          <div style="font-size:1.8rem;">⚠️</div>
+          <div style="font-size:0.95rem;color:#f4d03f;text-align:center;padding:0 20px;">
+            Ko'rish sekin yuklanyapti.<br>To'g'ridan-to'g'ri ochishni tavsiya qilamiz.
+          </div>
+          <button onclick="window.open('${url}','_blank');closePdfViewer();" style="
+            background:linear-gradient(135deg,#e74c3c,#c0392b);
+            border:none;color:#fff;padding:12px 24px;
+            border-radius:12px;font-size:0.95rem;font-weight:600;cursor:pointer;margin-top:4px;">
+            🌐 Brauzerda ochish
+          </button>`;
+      }
+    }, 15000);
+  } else {
+    frame.src = url;
+    frame.onload = function() {
+      loading.style.display = 'none';
+      frame.style.display   = 'flex';
+    };
+  }
+}
+
+async function downloadAsarPdf(url, fname, btn) {
+  btn.disabled    = true;
+  btn.textContent = '⏳';
+  if (isMobile()) {
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error();
+      const blob = await resp.blob();
+      const a    = document.createElement('a');
+      a.href     = URL.createObjectURL(blob);
+      a.download = fname;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      btn.textContent = '✅';
+    } catch(e) {
+      window.open(url, '_blank');
+      btn.textContent = '🌐';
+    }
+  } else {
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = fname;
+    a.target   = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    btn.textContent = '✅';
+  }
+  setTimeout(() => { btn.disabled = false; btn.textContent = '⬇️'; }, 3000);
+}
+
+
 function isMobile() {
   return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 }
